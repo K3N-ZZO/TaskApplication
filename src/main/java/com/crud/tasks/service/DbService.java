@@ -15,8 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DbService {
 
-    @Autowired
-    private TaskRepository repository;
+    private final TaskRepository repository;
 
     public List<Task> getAllTasks() {
         return repository.findAll();
@@ -29,7 +28,10 @@ public class DbService {
    public Task getTaskById(final Long id) throws TaskNotFoundException {
         return repository.findById(id).orElseThrow(TaskNotFoundException::new);
    }
-   public void deleteTask(final Long id) throws TaskNotFoundException {
+   public void deleteTask(final Long id){
         repository.deleteById(id);
+   }
+   public boolean existsById(final Long id){
+        return repository.existsById(id);
    }
 }

@@ -10,11 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+
+@CrossOrigin("*")
 @RestController()
 @RequestMapping("/v1/tasks")
 @RequiredArgsConstructor
@@ -30,12 +29,15 @@ public class TaskController {
         return ResponseEntity.ok(taskMapper.mapToTaskDtoList(tasks));
     }
 
-    @DeleteMapping(value = "{taskId}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) throws TaskNotFoundException {
-        service.deleteTask(taskId);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("{taskId}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
+        if (service.existsById(taskId)) {
+            service.deleteTask(taskId);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
-
     @PutMapping
     public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto taskDto){
         Task task = taskMapper.mapToTask(taskDto);
