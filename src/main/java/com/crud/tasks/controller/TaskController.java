@@ -24,7 +24,7 @@ public class TaskController {
 
 
     @GetMapping
-    public ResponseEntity <List<TaskDto>> getTasks() {
+    public ResponseEntity<List<TaskDto>> getTasks() {
         List<Task> tasks = service.getAllTasks();
         return ResponseEntity.ok(taskMapper.mapToTaskDtoList(tasks));
     }
@@ -38,15 +38,26 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
     @PutMapping
-    public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto taskDto){
+    public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto taskDto) {
+
+        if (taskDto.getId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (!service.existsById(taskDto.getId())) {
+            return ResponseEntity.notFound().build();
+        }
+
         Task task = taskMapper.mapToTask(taskDto);
         Task savedTask = service.saveTask(task);
-        return ResponseEntity.ok (taskMapper.mapToTaskDto(savedTask));
+        return ResponseEntity.ok(taskMapper.mapToTaskDto(savedTask));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity <Void> createTask(@RequestBody TaskDto taskDto){
+    public ResponseEntity<Void> createTask(@RequestBody TaskDto taskDto) {
+        taskDto.setId(null);
         Task task = taskMapper.mapToTask(taskDto);
         service.saveTask(task);
         return ResponseEntity.ok().build();
@@ -54,6 +65,6 @@ public class TaskController {
 
     @GetMapping(value = "{taskId}")
     public ResponseEntity<TaskDto> getTaskById(@PathVariable Long taskId) throws TaskNotFoundException {
-            return  ResponseEntity.ok(taskMapper.mapToTaskDto(service.getTaskById(taskId)));
+        return ResponseEntity.ok(taskMapper.mapToTaskDto(service.getTaskById(taskId)));
     }
 }
