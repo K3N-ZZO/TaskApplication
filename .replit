@@ -5,4 +5,4 @@ run = "./gradlew bootRun"
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "run"]
+run = ["sh", "-c", "./gradlew bootRun"]
