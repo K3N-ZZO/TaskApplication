@@ -24,9 +24,7 @@ public class SimpleEmailService {
         try {
             SimpleMailMessage mailMessage = createMailService(mail);
 
-            if (mail.getToCcOptional().isPresent()) {
-                mailMessage.setTo(mail.getToCcOptional().get());
-            }
+          mail.getToCcOptional().ifPresent(mailMessage::setCc);
 
             javaMailSender.send(mailMessage);
             log.info("Email sent successfully");
